@@ -28,13 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.sel_device = new System.Windows.Forms.ComboBox();
+            this.SuspendLayout();
+            // 
+            // sel_device
+            // 
+            this.sel_device.FormattingEnabled = true;
+            this.sel_device.Location = new System.Drawing.Point(40, 24);
+            this.sel_device.Name = "sel_device";
+            this.sel_device.Size = new System.Drawing.Size(328, 21);
+            this.sel_device.TabIndex = 0;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(415, 81);
+            this.Controls.Add(this.sel_device);
+            this.Name = "Form1";
+            this.Text = "VisibleSound";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.ComboBox sel_device;
     }
 }
 
