@@ -28,9 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.sel_device = new System.Windows.Forms.ComboBox();
             this.btn_start = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.txt_min = new System.Windows.Forms.Label();
+            this.txt_max = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.serial_port = new System.IO.Ports.SerialPort(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -47,7 +53,7 @@
             // 
             this.btn_start.Location = new System.Drawing.Point(40, 56);
             this.btn_start.Name = "btn_start";
-            this.btn_start.Size = new System.Drawing.Size(328, 23);
+            this.btn_start.Size = new System.Drawing.Size(240, 23);
             this.btn_start.TabIndex = 2;
             this.btn_start.Text = "start";
             this.btn_start.UseVisualStyleBackColor = true;
@@ -55,26 +61,64 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(72, 96);
+            this.pictureBox1.Location = new System.Drawing.Point(40, 96);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(256, 144);
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
             // 
+            // txt_min
+            // 
+            this.txt_min.AutoSize = true;
+            this.txt_min.Location = new System.Drawing.Point(320, 104);
+            this.txt_min.Name = "txt_min";
+            this.txt_min.Size = new System.Drawing.Size(23, 13);
+            this.txt_min.TabIndex = 7;
+            this.txt_min.Text = "min";
+            // 
+            // txt_max
+            // 
+            this.txt_max.AutoSize = true;
+            this.txt_max.Location = new System.Drawing.Point(320, 128);
+            this.txt_max.Name = "txt_max";
+            this.txt_max.Size = new System.Drawing.Size(26, 13);
+            this.txt_max.TabIndex = 8;
+            this.txt_max.Text = "max";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(296, 56);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "print arr";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // serial_port
+            // 
+            this.serial_port.BaudRate = 115200;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(407, 264);
+            this.ClientSize = new System.Drawing.Size(407, 261);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.txt_max);
+            this.Controls.Add(this.txt_min);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btn_start);
             this.Controls.Add(this.sel_device);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "VisibleSound";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -83,6 +127,10 @@
         private System.Windows.Forms.ComboBox sel_device;
         private System.Windows.Forms.Button btn_start;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label txt_min;
+        private System.Windows.Forms.Label txt_max;
+        private System.Windows.Forms.Button button1;
+        private System.IO.Ports.SerialPort serial_port;
     }
 }
 
