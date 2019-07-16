@@ -14,7 +14,8 @@ namespace SoundVisualizer
         private IWaveIn waveIn;
         private static int fftLength = 256;
         private SampleAggregator sampleAggregator = new SampleAggregator(fftLength);
-        //Bitmap bitmap;
+        private float volume = 1.0f;
+        Bitmap bitmap;
         public Form1()
         {
             InitializeComponent();
@@ -25,7 +26,7 @@ namespace SoundVisualizer
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
             MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
             sel_device.Items.AddRange(devices.ToArray());
-            //bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
         }
 
         void OnDataAvailable(object sender, WaveInEventArgs e)
@@ -50,12 +51,21 @@ namespace SoundVisualizer
 
         private void FftCalculated(object sender, FftEventArgs e)
         {
-            foreach(NAudio.Dsp.Complex C in e.Result)
+            Graphics gr = Graphics.FromImage(bitmap);
+            for (int i = 1; i < e.Result.Length/2 - 1; i++)
             {
-                Console.Write("X: " + C.X + "; Y: " + C.Y + " --- ");
-
+                double mX = (e.Result[i - 1].X + e.Result[i].X + e.Result[i + 1].X) / 3;
+                double mY = (e.Result[i - 1].Y + e.Result[i].Y + e.Result[i + 1].Y) / 3;
+                double magnitude = Math.Sqrt(mX * mX + mY * mY);
+                float res = 20 * (float)Math.Log(magnitude, 10);
+                if (res > -90f)
+                {
+                    gr.DrawLine(Pens.White, i * 10, 0, i * 10, pictureBox1.Height);
+                    gr.DrawLine(Pens.Black, i * 10, pictureBox1.Height, i * 10, pictureBox1.Height - res - 90);
+                    pictureBox1.Image = bitmap;
+                }
             }
-            Console.WriteLine();
+            
         }
 
         private void Sel_device_SelectedIndexChanged(object sender, EventArgs e)
@@ -66,31 +76,36 @@ namespace SoundVisualizer
 
         private void Btn_start_Click(object sender, EventArgs e)
         {
+            sampleAggregator.FftCalculated -= new EventHandler<FftEventArgs>(FftCalculated);
             sampleAggregator.FftCalculated += new EventHandler<FftEventArgs>(FftCalculated);
             sampleAggregator.PerformFFT = true;
 
             if (device != null)
+            {
                 waveIn = new WasapiLoopbackCapture(device);
+                volume = device.AudioEndpointVolume.MasterVolumeLevelScalar;
+            }
 
+            waveIn.DataAvailable -= OnDataAvailable;
             waveIn.DataAvailable += OnDataAvailable;
 
             waveIn.StartRecording();
         }
 
-        public static float lerp(float a, float b, float t)
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            return a + (b - a) * t;
+            waveIn.StopRecording();
         }
 
-        public static float map(float x, float x0, float x1, float a, float b)
-        {
-            float t = (x - x0) / (x1 - x0);
-            return lerp(a, b, t);
-        }
+        //public static float lerp(float a, float b, float t)
+        //{
+        //    return a + (b - a) * t;
+        //}
 
-        private void PictureBox1_Paint(object sender, PaintEventArgs e)
-        {
-            
-        }
+        //public static float map(float x, float x0, float x1, float a, float b)
+        //{
+        //    float t = (x - x0) / (x1 - x0);
+        //    return lerp(a, b, t);
+        //}
     }
 }

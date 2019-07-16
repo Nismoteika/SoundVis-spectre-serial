@@ -47,7 +47,7 @@
             // 
             this.btn_start.Location = new System.Drawing.Point(40, 56);
             this.btn_start.Name = "btn_start";
-            this.btn_start.Size = new System.Drawing.Size(75, 23);
+            this.btn_start.Size = new System.Drawing.Size(328, 23);
             this.btn_start.TabIndex = 2;
             this.btn_start.Text = "start";
             this.btn_start.UseVisualStyleBackColor = true;
@@ -55,23 +55,23 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(56, 112);
+            this.pictureBox1.Location = new System.Drawing.Point(72, 96);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(300, 100);
-            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.Size = new System.Drawing.Size(256, 144);
+            this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(415, 254);
+            this.ClientSize = new System.Drawing.Size(407, 264);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btn_start);
             this.Controls.Add(this.sel_device);
             this.Name = "Form1";
             this.Text = "VisibleSound";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
