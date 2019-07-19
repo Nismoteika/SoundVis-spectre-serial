@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.IO.Ports;
 using System.Linq;
 using System.Windows.Forms;
 using NAudio.CoreAudioApi;
@@ -20,6 +20,8 @@ namespace SoundVisualizer
 
         Bitmap bitmap;
 
+        SerialPort _serialPort;
+
         private float min = 0;
         private float max = -90f;
 
@@ -33,6 +35,9 @@ namespace SoundVisualizer
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
             MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
             sel_device.Items.AddRange(devices.ToArray());
+
+            sel_serial.SelectedIndex = 8;
+            _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
 
             sel_device.SelectedIndex = 1;
             device = devices[1];
@@ -80,14 +85,22 @@ namespace SoundVisualizer
 
                     if(i % 8 == 0)
                         to_serial[i/8] = (char)map(dbs, min, max, 0, 8);
-                    gr.DrawLine(Pens.White, i * 10, 0, i * 10, pictureBox1.Height);
+                    //gr.DrawLine(Pens.White, i * 10, 0, i * 10, pictureBox1.Height);
                     gr.DrawLine(Pens.Black, i * 10, pictureBox1.Height, i * 10, pictureBox1.Height - dbs - 90);
                     pictureBox1.Image = bitmap;
                 }
             }
             txt_min.Text = min.ToString();
             txt_max.Text = max.ToString();
-            serial_port.Write(to_serial, 0, to_serial.Length);
+            if(_serialPort.IsOpen)
+            {
+                //for (int i = 0; i < to_serial.Length; i++)
+                //    Console.Write(Convert.ToInt32(to_serial[i]));
+                //Console.WriteLine();
+                //    _serialPort.Write(Convert.ToInt32(to_serial[i]) + " ");
+                //_serialPort.Write("\n");
+                _serialPort.Write(to_serial, 0, to_serial.Length);
+            }
         }
 
         private void Sel_device_SelectedIndexChanged(object sender, EventArgs e)
@@ -139,6 +152,23 @@ namespace SoundVisualizer
                 Console.Write(Convert.ToInt32(c) + " ");
             }
             Console.WriteLine();
+        }
+
+        private void Enable_serial_CheckedChanged(object sender, EventArgs e)
+        {
+            if(enable_serial.Checked)
+                _serialPort.Open();
+            else
+                _serialPort.Close();
+        }
+
+        private void Sel_serial_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(_serialPort != null)
+                if(_serialPort.IsOpen)
+                    _serialPort.Close();
+
+            _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
         }
     }
 }

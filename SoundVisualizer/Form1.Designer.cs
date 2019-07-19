@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.sel_device = new System.Windows.Forms.ComboBox();
             this.btn_start = new System.Windows.Forms.Button();
@@ -36,7 +35,8 @@
             this.txt_min = new System.Windows.Forms.Label();
             this.txt_max = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.serial_port = new System.IO.Ports.SerialPort(this.components);
+            this.enable_serial = new System.Windows.Forms.CheckBox();
+            this.sel_serial = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -95,15 +95,43 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // serial_port
+            // enable_serial
             // 
-            this.serial_port.BaudRate = 115200;
+            this.enable_serial.AutoSize = true;
+            this.enable_serial.Location = new System.Drawing.Point(304, 152);
+            this.enable_serial.Name = "enable_serial";
+            this.enable_serial.Size = new System.Drawing.Size(85, 17);
+            this.enable_serial.TabIndex = 10;
+            this.enable_serial.Text = "enable serial";
+            this.enable_serial.UseVisualStyleBackColor = true;
+            this.enable_serial.CheckedChanged += new System.EventHandler(this.Enable_serial_CheckedChanged);
+            // 
+            // sel_serial
+            // 
+            this.sel_serial.FormattingEnabled = true;
+            this.sel_serial.Items.AddRange(new object[] {
+            "COM1",
+            "COM2",
+            "COM3",
+            "COM4",
+            "COM5",
+            "COM6",
+            "COM7",
+            "COM8",
+            "COM9"});
+            this.sel_serial.Location = new System.Drawing.Point(304, 176);
+            this.sel_serial.Name = "sel_serial";
+            this.sel_serial.Size = new System.Drawing.Size(88, 21);
+            this.sel_serial.TabIndex = 11;
+            this.sel_serial.SelectedIndexChanged += new System.EventHandler(this.Sel_serial_SelectedIndexChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(407, 261);
+            this.Controls.Add(this.sel_serial);
+            this.Controls.Add(this.enable_serial);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txt_max);
             this.Controls.Add(this.txt_min);
@@ -130,7 +158,8 @@
         private System.Windows.Forms.Label txt_min;
         private System.Windows.Forms.Label txt_max;
         private System.Windows.Forms.Button button1;
-        private System.IO.Ports.SerialPort serial_port;
+        private System.Windows.Forms.CheckBox enable_serial;
+        private System.Windows.Forms.ComboBox sel_serial;
     }
 }
 
