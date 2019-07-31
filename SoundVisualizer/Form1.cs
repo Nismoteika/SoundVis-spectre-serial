@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
@@ -11,19 +12,19 @@ namespace SoundVisualizer
     public partial class Form1 : Form
     {
         MMDevice device;
-
         IWaveIn waveIn;
+
         static int fftLength = 256;
         SampleAggregator sampleAggregator;
 
-        char[] to_serial = new char[16];
-
+        Thread SerialWriteTh;
         Bitmap bitmap;
-
         SerialPort _serialPort;
 
-        private float min = 0;
-        private float max = -90f;
+        char[] to_serial = new char[16];
+
+        private float maxDb = 0;
+        private float minDb = -90f;
 
         public Form1()
         {
@@ -68,39 +69,36 @@ namespace SoundVisualizer
         private void FftCalculated(object sender, FftEventArgs e)
         {
             Graphics gr = Graphics.FromImage(bitmap);
-            for (int i = 0; i < e.Result.Length/2; i ++)
+            for (int i = 1; i < e.Result.Length / 2 - 1; i += 2)
             {
-                double mX = e.Result[i].X;
-                //double mX = (e.Result[i - 1].X + e.Result[i].X + e.Result[i + 1].X) / 3;
-                double mY = e.Result[i].Y;
-                //double mY = (e.Result[i - 1].Y + e.Result[i].Y + e.Result[i + 1].Y) / 3;
+                //double mX = e.Result[i].X;
+                double mX = (e.Result[i - 1].X + e.Result[i].X + e.Result[i + 1].X) / 3;
+                //double mY = e.Result[i].Y;
+                double mY = (e.Result[i - 1].Y + e.Result[i].Y + e.Result[i + 1].Y) / 3;
                 double magnitude = Math.Sqrt(mX * mX + mY * mY);
                 float dbs = 20 * (float)Math.Log(magnitude, 10);
 
-                gr.DrawLine(Pens.White, i * 10, 0, i * 10, pictureBox1.Height);
+                float wM = Transformation.map(i, 0, 64, 0, 256);
+
                 if (dbs > -90f)
                 {
-                    if (dbs < min) min = dbs;
-                    if (dbs > max) max = dbs;
+                    if (dbs < maxDb) maxDb = dbs;
+                    if (dbs > minDb) minDb = dbs;
 
-                    if(i % 8 == 0)
-                        to_serial[i/8] = (char)map(dbs, min, max, 0, 8);
-                    //gr.DrawLine(Pens.White, i * 10, 0, i * 10, pictureBox1.Height);
-                    gr.DrawLine(Pens.Black, i * 10, pictureBox1.Height, i * 10, pictureBox1.Height - dbs - 90);
-                    pictureBox1.Image = bitmap;
+                    if ((i - 1) % 8 == 0)
+                        to_serial[i / 8] = (char)Transformation.map(dbs, minDb, maxDb, 0, 8);
+
+                    //gr.DrawLine(Pens.White, wM, 0,                  wM, pictureBox1.Height);
+                    //gr.DrawLine(Pens.Black, wM, pictureBox1.Height, wM, pictureBox1.Height - dbs - 90);
+
+                    gr.FillRectangle(Brushes.Black, wM - 2, 0, 4, pictureBox1.Height);
+                    gr.FillRectangle(Brushes.White, wM - 2, 0, 4, Transformation.map(dbs, minDb, maxDb, 0, 144));
                 }
             }
-            txt_min.Text = min.ToString();
-            txt_max.Text = max.ToString();
-            if(_serialPort.IsOpen)
-            {
-                //for (int i = 0; i < to_serial.Length; i++)
-                //    Console.Write(Convert.ToInt32(to_serial[i]));
-                //Console.WriteLine();
-                //    _serialPort.Write(Convert.ToInt32(to_serial[i]) + " ");
-                //_serialPort.Write("\n");
-                _serialPort.Write(to_serial, 0, to_serial.Length);
-            }
+            pictureBox1.Image = bitmap;
+
+            txt_min.Text = maxDb.ToString();
+            txt_max.Text = minDb.ToString();
         }
 
         private void Sel_device_SelectedIndexChanged(object sender, EventArgs e)
@@ -109,66 +107,70 @@ namespace SoundVisualizer
                 device = (MMDevice)sel_device.SelectedItem;
         }
 
+        private void Sel_serial_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_serialPort != null)
+                if (_serialPort.IsOpen)
+                    _serialPort.Close();
+
+            _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
+        }
+
         private void Btn_start_Click(object sender, EventArgs e)
         {
             sampleAggregator = new SampleAggregator(fftLength);
             sampleAggregator.FftCalculated += new EventHandler<FftEventArgs>(FftCalculated);
             sampleAggregator.PerformFFT = true;
-            if(waveIn != null)
-            {
+
+            if (waveIn != null)
                 waveIn.StopRecording();
-            }
+
             if (device != null)
-            {
                 waveIn = new WasapiLoopbackCapture(device);
-            }
 
             waveIn.DataAvailable += OnDataAvailable;
-
             waveIn.StartRecording();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(waveIn != null)
+            if (waveIn != null)
                 waveIn.StopRecording();
+
+            if (SerialWriteTh != null)
+                if (SerialWriteTh.IsAlive)
+                    SerialWriteTh.Abort();
         }
 
-        public static float lerp(float a, float b, float t)
+        private void SerialWriteThread()
         {
-            return a + (b - a) * t;
-        }
-
-        public static float map(float x, float x0, float x1, float a, float b)
-        {
-            float t = (x - x0) / (x1 - x0);
-            return lerp(a, b, t);
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            foreach(char c in to_serial)
+            while (_serialPort.IsOpen && to_serial != null)
             {
-                Console.Write(Convert.ToInt32(c) + " ");
+                for (int i = 0; i < to_serial.Length; i++)
+                    Console.Write(Convert.ToInt32(to_serial[i]));
+                Console.WriteLine();
+                _serialPort.Write(to_serial, 0, to_serial.Length);
             }
-            Console.WriteLine();
         }
 
         private void Enable_serial_CheckedChanged(object sender, EventArgs e)
         {
             if(enable_serial.Checked)
-                _serialPort.Open();
+            {
+                try
+                {
+                    _serialPort.Open();
+                }
+                catch
+                {
+                    MessageBox.Show("Can't open serial port, may be device not connected");
+                    enable_serial.Checked = false;
+                }
+                SerialWriteTh = new Thread(SerialWriteThread);
+                SerialWriteTh.Start();
+            }
             else
                 _serialPort.Close();
-        }
-
-        private void Sel_serial_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(_serialPort != null)
-                if(_serialPort.IsOpen)
-                    _serialPort.Close();
-
-            _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
         }
     }
 }

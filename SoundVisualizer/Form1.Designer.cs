@@ -34,7 +34,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.txt_min = new System.Windows.Forms.Label();
             this.txt_max = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.enable_serial = new System.Windows.Forms.CheckBox();
             this.sel_serial = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -51,11 +50,13 @@
             // 
             // btn_start
             // 
+            this.btn_start.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.btn_start.Font = new System.Drawing.Font("Roboto", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.btn_start.Location = new System.Drawing.Point(40, 56);
             this.btn_start.Name = "btn_start";
-            this.btn_start.Size = new System.Drawing.Size(240, 23);
+            this.btn_start.Size = new System.Drawing.Size(328, 32);
             this.btn_start.TabIndex = 2;
-            this.btn_start.Text = "start";
+            this.btn_start.Text = "Visualize";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.Btn_start_Click);
             // 
@@ -84,16 +85,6 @@
             this.txt_max.Size = new System.Drawing.Size(26, 13);
             this.txt_max.TabIndex = 8;
             this.txt_max.Text = "max";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(296, 56);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "print arr";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // enable_serial
             // 
@@ -132,7 +123,6 @@
             this.ClientSize = new System.Drawing.Size(407, 261);
             this.Controls.Add(this.sel_serial);
             this.Controls.Add(this.enable_serial);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.txt_max);
             this.Controls.Add(this.txt_min);
             this.Controls.Add(this.pictureBox1);
@@ -151,15 +141,13 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ComboBox sel_device;
         private System.Windows.Forms.Button btn_start;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label txt_min;
         private System.Windows.Forms.Label txt_max;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox enable_serial;
         private System.Windows.Forms.ComboBox sel_serial;
+        public System.Windows.Forms.ComboBox sel_device;
     }
 }
 
