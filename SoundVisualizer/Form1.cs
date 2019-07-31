@@ -71,10 +71,15 @@ namespace SoundVisualizer
             Graphics gr = Graphics.FromImage(bitmap);
             for (int i = 1; i < e.Result.Length / 2 - 1; i += 2)
             {
-                //double mX = e.Result[i].X;
-                double mX = (e.Result[i - 1].X + e.Result[i].X + e.Result[i + 1].X) / 3;
-                //double mY = e.Result[i].Y;
-                double mY = (e.Result[i - 1].Y + e.Result[i].Y + e.Result[i + 1].Y) / 3;
+                double mX = e.Result[i].X;
+                //double mX = (e.Result[i - 1].X + e.Result[i].X + e.Result[i + 1].X) / 3;
+                //double mX = (e.Result[i - 1].X * 1 / 4) + (e.Result[i].X * 1 / 2) + (e.Result[i + 1].X * 1 / 4);
+                double mY = e.Result[i].Y;
+                //double mY = (e.Result[i - 1].Y + e.Result[i].Y + e.Result[i + 1].Y) / 3;
+                //double mY = (e.Result[i - 1].Y * 1 / 4) + (e.Result[i].Y * 1 / 2) + (e.Result[i + 1].Y * 1 / 4);
+
+
+
                 double magnitude = Math.Sqrt(mX * mX + mY * mY);
                 float dbs = 20 * (float)Math.Log(magnitude, 10);
 
