@@ -117,7 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="notifyIcon1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="notifyIcon1.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAMMOAADDDgAAAAAAAAAA
+        AAD///8A////Af///xb///8T////CP///wH///8A////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAA////AP///wn///+l////zv///7f///+h////if///3D///9Y////Qv///y////8e////Ef//
+        /wj///8C////AP///wD///8U////0/39/f///////////////////////v7+/f39/ff////t/v7+4P39
+        /c////+8////n////yz///8A////Iufn5+N0dHT/2dnZ/////////////f39/5WVlf9hYWH/5OTk/9DQ
+        0P93d3f/8fHx/////+3///86////AP///zPd3d3vLCws/8bGxv///////////9LS0v8dHR3/EhIS/9bW
+        1v+2trb/Ly8v/+np6f/////h////Jv///wD///9H3t7e+SwsLP/Gxsb///////39/f9sbGz/MDAw/yQk
+        JP/V1dX/tra2/y8vL//p6en/////0f///xb///8A////Xt/f3/4sLCz/xsbG///////Hx8f/LCws/5iY
+        mP8tLS3/1NTU/7a2tv8vLy//6enp/////77///8L////AP///3bf39//LCws/8bGxv/9/f3/Xl5e/2Vl
+        Zf/S0tL/Kysr/9TU1P+2trb/Ly8v/+np6f////+o////A////wD///+O4ODg/ywsLP/Jycn/wMDA/ykp
+        Kf/Nzc3/2dnZ/yoqKv/U1NT/tra2/y8vL//p6en/////kP///wD///8C////puDg4P8sLCz/vb29/1ZW
+        Vv9ubm7//////9fX1/8qKir/1NTU/7e3t/8yMjL/6urq/////3j///8A////Cv///7zg4OD/Ly8v/3h4
+        eP8vLy//1NTU///////X19f/Kioq/9HR0f/q6ur/vr6+//j4+P////9g////AP///xX////P4ODg/yUl
+        Jf8WFhb/fX19////////////19fX/yoqKv/S0tL/0tLS/4mJif/u7u75////Sf///wD///8l////4Ozs
+        7P93d3f/bm5u/+Dg4P///////////+bm5v9+fn7/5eXl/8TExP9paWn/6enp8P///zX///8A////JP//
+        /67////R////4P///+7////3/////f/////////////////////+/v7//f39/////+T///8j////AP//
+        /wH///8I////Ev///x////8w////Q////1n///9x////iv///6L///+4////zP///9/////D////FP//
+        /wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AP///wD///8B////CP///xP///8i////KP//
+        /wT///8Ag/8AAIAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAACAAQAAAAEAAAABAAAAAQAAAAEAAAAB
+        AAAAAQAA/4EAAA==
+</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAMMOAADDDgAAAAAAAAAA

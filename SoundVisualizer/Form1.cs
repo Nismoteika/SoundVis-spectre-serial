@@ -33,6 +33,8 @@ namespace SoundVisualizer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            notifyIcon1.Visible = false;
+
             MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
             MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
             sel_device.Items.AddRange(devices.ToArray());
@@ -44,6 +46,32 @@ namespace SoundVisualizer
             device = devices[1];
 
             bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (waveIn != null)
+                waveIn.StopRecording();
+
+            if (SerialWriteTh != null)
+                if (SerialWriteTh.IsAlive)
+                    SerialWriteTh.Abort();
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+                notifyIcon1.Visible = true;
+            }
+        }
+
+        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            notifyIcon1.Visible = false;
+            this.ShowInTaskbar = true;
+            WindowState = FormWindowState.Normal;
         }
 
         void OnDataAvailable(object sender, WaveInEventArgs e)
@@ -135,16 +163,6 @@ namespace SoundVisualizer
 
             waveIn.DataAvailable += OnDataAvailable;
             waveIn.StartRecording();
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (waveIn != null)
-                waveIn.StopRecording();
-
-            if (SerialWriteTh != null)
-                if (SerialWriteTh.IsAlive)
-                    SerialWriteTh.Abort();
         }
 
         private void SerialWriteThread()

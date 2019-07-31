@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.sel_device = new System.Windows.Forms.ComboBox();
             this.btn_start = new System.Windows.Forms.Button();
@@ -36,6 +37,7 @@
             this.txt_max = new System.Windows.Forms.Label();
             this.enable_serial = new System.Windows.Forms.CheckBox();
             this.sel_serial = new System.Windows.Forms.ComboBox();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -116,6 +118,13 @@
             this.sel_serial.TabIndex = 11;
             this.sel_serial.SelectedIndexChanged += new System.EventHandler(this.Sel_serial_SelectedIndexChanged);
             // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "Sound Visualizer";
+            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -134,6 +143,7 @@
             this.Text = "VisibleSound";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -148,6 +158,7 @@
         private System.Windows.Forms.CheckBox enable_serial;
         private System.Windows.Forms.ComboBox sel_serial;
         public System.Windows.Forms.ComboBox sel_device;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 
