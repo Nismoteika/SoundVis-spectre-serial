@@ -21,7 +21,7 @@ namespace SoundVisualizer
         Bitmap bitmap;
         SerialPort _serialPort;
 
-        char[] to_serial = new char[16];
+        byte[] to_serial = new byte[16];
 
         private float maxDb = 0;
         private float minDb = -90f;
@@ -97,35 +97,30 @@ namespace SoundVisualizer
         private void FftCalculated(object sender, FftEventArgs e)
         {
             Graphics gr = Graphics.FromImage(bitmap);
-            for (int i = 1; i < e.Result.Length / 2 - 1; i += 2)
+            for (int i = 0; i < e.Result.Length / 4; i++)
             {
                 double mX = e.Result[i].X;
-                //double mX = (e.Result[i - 1].X + e.Result[i].X + e.Result[i + 1].X) / 3;
-                //double mX = (e.Result[i - 1].X * 1 / 4) + (e.Result[i].X * 1 / 2) + (e.Result[i + 1].X * 1 / 4);
                 double mY = e.Result[i].Y;
-                //double mY = (e.Result[i - 1].Y + e.Result[i].Y + e.Result[i + 1].Y) / 3;
-                //double mY = (e.Result[i - 1].Y * 1 / 4) + (e.Result[i].Y * 1 / 2) + (e.Result[i + 1].Y * 1 / 4);
-
-
 
                 double magnitude = Math.Sqrt(mX * mX + mY * mY);
                 float dbs = 20 * (float)Math.Log(magnitude, 10);
 
                 float wM = Transformation.map(i, 0, 64, 0, 256);
 
-                if (dbs > -90f)
+                gr.FillRectangle(Brushes.White, wM - 2, 0, 4, pictureBox1.Height);
+                if (dbs > -80f)
                 {
                     if (dbs < maxDb) maxDb = dbs;
                     if (dbs > minDb) minDb = dbs;
 
-                    if ((i - 1) % 8 == 0)
-                        to_serial[i / 8] = (char)Transformation.map(dbs, minDb, maxDb, 0, 8);
+                    if (i % 4 == 0)
+                        to_serial[i / 4] = (byte)Transformation.map(dbs, maxDb, minDb, 0, 8);
 
                     //gr.DrawLine(Pens.White, wM, 0,                  wM, pictureBox1.Height);
                     //gr.DrawLine(Pens.Black, wM, pictureBox1.Height, wM, pictureBox1.Height - dbs - 90);
-
-                    gr.FillRectangle(Brushes.Black, wM - 2, 0, 4, pictureBox1.Height);
-                    gr.FillRectangle(Brushes.White, wM - 2, 0, 4, Transformation.map(dbs, minDb, maxDb, 0, 144));
+                    
+                    gr.FillRectangle(Brushes.Black, wM - 2, Transformation.map(dbs, minDb, maxDb, 0, 144), 4, pictureBox1.Height - Transformation.map(dbs, minDb, maxDb, 0, 144));
+                    
                 }
             }
             pictureBox1.Image = bitmap;
@@ -193,7 +188,10 @@ namespace SoundVisualizer
                 SerialWriteTh.Start();
             }
             else
+            {
                 _serialPort.Close();
+                //TODO block thread
+            }
         }
     }
 }
