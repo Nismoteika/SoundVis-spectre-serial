@@ -1,4 +1,5 @@
-﻿using System;
+﻿using static SoundVisualizer.Transformation;
+using System;
 using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
@@ -13,15 +14,19 @@ namespace SoundVisualizer
     {
         MMDevice device;
         IWaveIn waveIn;
-
-        static int fftLength = 256;
         SampleAggregator sampleAggregator;
 
-        Thread SerialWriteTh;
+        Config config = new Config();
+
         Bitmap bitmap;
+
+        Thread SerialWriteTh;
         SerialPort _serialPort;
 
-        byte[] to_serial = new byte[16];
+        byte[] serial_buffer;
+
+        int picH;
+        int picW;
 
         private float maxDb = 0;
         private float minDb = -90f;
@@ -39,17 +44,33 @@ namespace SoundVisualizer
             MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
             sel_device.Items.AddRange(devices.ToArray());
 
-            sel_serial.SelectedIndex = 8;
-            _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
+            bool configOk = config.ReadConfig();
 
-            sel_device.SelectedIndex = 1;
-            device = devices[1];
+            sel_fft.SelectedItem = config.fftLen.ToString();
+            num_cols.Value = config.cols;
+            num_rows.Value = config.rows;
+            sel_serial.SelectedIndex = config.com_port;
+            sel_device.SelectedIndex = config.deviceIdx;
+            serial_buffer = new byte[config.cols];
 
-            bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            if(configOk)
+                _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
+
+            device = devices[config.deviceIdx];
+
+            picH = pictureBox1.Height;
+            picW = pictureBox1.Width;
+            bitmap = new Bitmap(picW, picH);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            int cols = Convert.ToInt32(num_cols.Value);
+            int rows = Convert.ToInt32(num_rows.Value);
+            int com_port = sel_serial.SelectedIndex;
+            int deviceIdx = sel_device.SelectedIndex;
+            config.WriteConfig(config.fftLen, cols, rows, com_port, deviceIdx);
+
             if (waveIn != null)
                 waveIn.StopRecording();
 
@@ -97,7 +118,8 @@ namespace SoundVisualizer
         private void FftCalculated(object sender, FftEventArgs e)
         {
             Graphics gr = Graphics.FromImage(bitmap);
-            for (int i = 0; i < e.Result.Length / 4; i++)
+            int halfPlot = e.Result.Length / 2;
+            for (int i = 0; i < halfPlot; i++)
             {
                 double mX = e.Result[i].X;
                 double mY = e.Result[i].Y;
@@ -105,28 +127,27 @@ namespace SoundVisualizer
                 double magnitude = Math.Sqrt(mX * mX + mY * mY);
                 float dbs = 20 * (float)Math.Log(magnitude, 10);
 
-                float wM = Transformation.map(i, 0, 64, 0, 256);
+                float wM = map(i, 0, halfPlot, 0, picW);
 
-                gr.FillRectangle(Brushes.White, wM - 2, 0, 4, pictureBox1.Height);
-                if (dbs > -80f)
+                gr.FillRectangle(SystemBrushes.Control, wM - 1, 0, 2, picH);
+                if (dbs > -90f)
                 {
                     if (dbs < maxDb) maxDb = dbs;
                     if (dbs > minDb) minDb = dbs;
 
-                    if (i % 4 == 0)
-                        to_serial[i / 4] = (byte)Transformation.map(dbs, maxDb, minDb, 0, 8);
+                    serial_buffer[(int)map(i, 0, halfPlot, 0, config.cols)] = (byte)map(dbs, maxDb, minDb, 0, config.rows);
 
-                    //gr.DrawLine(Pens.White, wM, 0,                  wM, pictureBox1.Height);
-                    //gr.DrawLine(Pens.Black, wM, pictureBox1.Height, wM, pictureBox1.Height - dbs - 90);
-                    
-                    gr.FillRectangle(Brushes.Black, wM - 2, Transformation.map(dbs, minDb, maxDb, 0, 144), 4, pictureBox1.Height - Transformation.map(dbs, minDb, maxDb, 0, 144));
-                    
+                    var y = map(dbs, minDb, maxDb, 0, picH);
+                    var height = picH - y;
+                    gr.FillRectangle(Brushes.Black, wM - 1, y, 2, height);
                 }
             }
             pictureBox1.Image = bitmap;
+        }
 
-            txt_min.Text = maxDb.ToString();
-            txt_max.Text = minDb.ToString();
+        private void Sel_fft_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            config.fftLen = Convert.ToInt32(sel_fft.SelectedItem);
         }
 
         private void Sel_device_SelectedIndexChanged(object sender, EventArgs e)
@@ -141,14 +162,22 @@ namespace SoundVisualizer
                 if (_serialPort.IsOpen)
                     _serialPort.Close();
 
+            enable_serial.Checked = false;
             _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
         }
 
         private void Btn_start_Click(object sender, EventArgs e)
         {
-            sampleAggregator = new SampleAggregator(fftLength);
+            config.rows = (int)num_rows.Value;
+            config.cols = (int)num_cols.Value;
+            serial_buffer = new byte[config.cols];
+
+            sampleAggregator = new SampleAggregator(config.fftLen);
             sampleAggregator.FftCalculated += new EventHandler<FftEventArgs>(FftCalculated);
             sampleAggregator.PerformFFT = true;
+
+            if(_serialPort == null)
+                _serialPort = new SerialPort(sel_serial.SelectedItem.ToString(), 19200, Parity.None, 8, StopBits.One);
 
             if (waveIn != null)
                 waveIn.StopRecording();
@@ -162,12 +191,15 @@ namespace SoundVisualizer
 
         private void SerialWriteThread()
         {
-            while (_serialPort.IsOpen && to_serial != null)
+            while (_serialPort.IsOpen && serial_buffer != null)
             {
-                for (int i = 0; i < to_serial.Length; i++)
-                    Console.Write(Convert.ToInt32(to_serial[i]));
-                Console.WriteLine();
-                _serialPort.Write(to_serial, 0, to_serial.Length);
+                try
+                {
+                    _serialPort.Write(serial_buffer, 0, serial_buffer.Length);
+                } catch
+                {
+                    Console.WriteLine("Невозможно записать данные в COM-порт");
+                }
             }
         }
 
@@ -178,19 +210,24 @@ namespace SoundVisualizer
                 try
                 {
                     _serialPort.Open();
+                    SerialWriteTh = new Thread(SerialWriteThread);
+                    SerialWriteTh.Name = "SerialThread";
+                    SerialWriteTh.Start();
                 }
                 catch
                 {
-                    MessageBox.Show("Can't open serial port, may be device not connected");
+                    MessageBox.Show("Невозможно открыть COM-порт,\nвозможно устройство не подключено");
                     enable_serial.Checked = false;
                 }
-                SerialWriteTh = new Thread(SerialWriteThread);
-                SerialWriteTh.Start();
             }
             else
             {
-                _serialPort.Close();
-                //TODO block thread
+                if(_serialPort.IsOpen)
+                    _serialPort.Close();
+
+                if (SerialWriteTh != null)
+                    if (SerialWriteTh.IsAlive)
+                        SerialWriteTh.Abort();
             }
         }
     }
