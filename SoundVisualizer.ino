@@ -1,10 +1,10 @@
-//
 #include "LedControl.h"
 
 #define NUM_OF_COLUMNS 16
 //значения яркости от 0 до 15   
 #define BRIGHTNESS 5
 
+//LedControl(int dataPin, int clkPin, int csPin, int numDevices);
 LedControl matrix = LedControl(16, 15, 14, 2);
 
 byte val_cols[NUM_OF_COLUMNS];
@@ -24,7 +24,7 @@ void setup()
   matrix.clearDisplay(1);
 }
 
-void loop() 
+void loop()
 {
   if (Serial.available() > 0) {
     Serial.readBytes(val_cols, NUM_OF_COLUMNS);
