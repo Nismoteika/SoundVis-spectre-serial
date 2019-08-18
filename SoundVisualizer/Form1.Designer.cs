@@ -80,11 +80,11 @@
             // enable_serial
             // 
             this.enable_serial.AutoSize = true;
-            this.enable_serial.Location = new System.Drawing.Point(288, 248);
+            this.enable_serial.Location = new System.Drawing.Point(288, 232);
             this.enable_serial.Name = "enable_serial";
-            this.enable_serial.Size = new System.Drawing.Size(85, 17);
+            this.enable_serial.Size = new System.Drawing.Size(89, 30);
             this.enable_serial.TabIndex = 7;
-            this.enable_serial.Text = "enable serial";
+            this.enable_serial.Text = "Отправить в\r\nCOM-порт";
             this.enable_serial.UseVisualStyleBackColor = true;
             this.enable_serial.CheckedChanged += new System.EventHandler(this.Enable_serial_CheckedChanged);
             // 
@@ -156,11 +156,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(56, 16);
+            this.label1.Location = new System.Drawing.Point(48, 16);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(26, 13);
+            this.label1.Size = new System.Drawing.Size(59, 13);
             this.label1.TabIndex = 15;
-            this.label1.Text = "FFT";
+            this.label1.Text = "длина FFT";
             // 
             // label2
             // 
